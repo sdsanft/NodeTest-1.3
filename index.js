@@ -15,21 +15,15 @@ app.set('view engine', 'ejs')
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: false }))
 
-//Setting up our Mongo connection
-var MongoClient = require('mongodb').MongoClient;
-var url = "mongodb://localhost:27017/";
+const MongoClient = require('mongodb').MongoClient;
+//const assert = require('assert');
+const url = "mongodb+srv://Origin:iN9JjqD6P2kJYiyf@clustertest-s8lva.mongodb.net/test?retryWrites=true";
 
-//Creating our collection
-MongoClient.connect(url, function(err, db) {
-		if (err) throw err;
-		var dbo = db.db("mydb");
-
-		dbo.createCollection("customers", function(err, res) {
-			if (err) throw err;
-			console.log("Collection created!");
-			db.close();
-		});
+MongoClient.connect(url, function(err) {
+  //assert.equal(null, err);
+  //client.close();
 });
+
 
 app.get('/', function(req, res) {
 	res.render('main.ejs', {port:port})
