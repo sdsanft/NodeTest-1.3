@@ -17,7 +17,8 @@ app.use(bodyParser.urlencoded({ extended: false }))
 
 const MongoClient = require('mongodb').MongoClient;
 //const assert = require('assert');
-const url = "mongodb+srv://Origin:iN9JjqD6P2kJYiyf@clustertest-s8lva.mongodb.net/test?retryWrites=true";
+const url = "mongodb+srv://Origin:iN9JjqD6P2kJYiyf@cluster0-s8lva.gcp.mongodb.net/test?retryWrites=true"
+//const url = "mongodb+srv://Origin:iN9JjqD6P2kJYiyf@clustertest-s8lva.mongodb.net/test?retryWrites=true";
 
 app.get('/', function(req, res) {
 	res.render('main.ejs', {port:port})
@@ -37,18 +38,19 @@ app.post('/signin', function(req, res) {
 app.get('/user/:username', function(req, res) {
 	var settings;
 	MongoClient.connect(url, {useNewUrlParser: true}, function(err, client) {
+		if(err) throw err;
 		db = client.db("MongoTest")
 		settings = db.collection("UserSettings").findOne({_id: req.params.username}, function(err, result) {
 			if (err) throw err;
 
 			if(result == null) {
-				settings = {_id: req.params.username, number:0}
+				settings = {_id: req.params.username, meetingTitle: "Meet and Greet", meetingLink: "", timezone: "MDT", days: ["Mon", "Tue", "Wed", "Thu", "Fri"]}
 				db.collection("UserSettings").insertOne(settings)
 			} else {
 				settings = result
 			}
 
-			res.render('user.ejs', {port:port, username:req.params.username, number:settings.number})
+			res.render('user.ejs', {port, settings})
 		})
 	})
 })
@@ -58,7 +60,9 @@ app.get('/user/:username/settings', function(req, res) {
 })
 
 app.post('/user/:username/settings', function(req, res) {
-	numRes = req.body.number
+	meetingTitle = req.body.meetingTitle
+	meetingLink = req.body.meetingLink
+	timezone = req.body.timezone
 
 	MongoClient.connect(url, {useNewUrlParser: true}, function(err, client) {
 		db = client.db("MongoTest")
@@ -67,12 +71,12 @@ app.post('/user/:username/settings', function(req, res) {
 			if (err) throw err;
 
 			if(result == null) {
-				settings = {_id: req.params.username, number:numRes}
+				settings = {_id: req.params.username, meetingTitle, meetingLink, timezone, days:["Mon", "Tue", "Wed", "Thur", "Fri"]}
 				db.collection("UserSettings").insertOne(settings, function() {
 					res.redirect('http://localhost:' + port + '/user/' + req.params.username)
 				})
 			} else {
-				var settings = {$set: {number: numRes}}
+				var settings = {$set: {meetingTitle, meetingLink, timezone}}
 				db.collection("UserSettings").updateOne({_id: req.params.username}, settings, function(err, result) {
 					res.redirect('http://localhost:' + port + '/user/' + req.params.username)
 				})

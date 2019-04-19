@@ -1,10 +1,14 @@
 <head>
-	<title><%= username%>'s Profile</title>
+	<title><%= settings._id%>'s Profile</title>
 </head>
 <body>
 	<h1>Project Liger</h1>
-	<p>Hello, <%= username%>!</p>
-  <p>Your Number: <%= number%></p>
-  <a href="http://localhost:<%= port%>/user/<%= username%>/settings">Settings</a>
+	<p>Hello, <%= settings._id%>!</p>
+  <p>Your Settings:</p>
+  <p>Meeting Title: <%= settings.meetingTitle%></p>
+  <p>Meeting Link: <a href="<%= settings.meetingLink%>"> <%= settings.meetingLink%> </a></p>
+  <p>Timezone: <%= settings.timezone%></p>
+  <p>Days: <%= settings.days%></p>
+  <a href="http://localhost:<%= port%>/user/<%= settings._id%>/settings">Settings</a>
 	<a href="http://localhost:<%= port%>">Home</a>
 </body>
